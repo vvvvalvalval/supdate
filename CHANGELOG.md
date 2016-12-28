@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This change
 ## [Unreleased]
 ## 0.1.0 - 2016-12-28
 ### Added
-- Files from the new template.
-- Widget maker public API - `make-widget-sync`.
+- supdate macro
+- tests
 
 [Unreleased]: https://github.com/vvvvalvalval/supdate/compare/0.1.0...HEAD
