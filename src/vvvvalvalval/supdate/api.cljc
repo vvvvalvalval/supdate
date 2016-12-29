@@ -27,7 +27,7 @@
     (reduce supdate* v transform)
 
     (keyword? transform)
-    (transform v)
+    (get v transform)
 
     :else
     (throw (ex-info "Unrecognized transform."
@@ -121,14 +121,18 @@ thus generating code which skips type checks and dynamic traversal of the transf
     #(get % transform)
 
     (map? transform)
-    (apply impl/comp2
-      (for [[k trf] transform]
-        (if (false? trf)
-          (fn [m tm]
-            (dissoc! tm k))
-          (let [f (compile trf)]
-            (fn [m tm]
-              (impl/upd!* m tm k f))))))
+    (let [aux (apply impl/comp2
+                (for [[k trf] transform]
+                  (if (false? trf)
+                    (fn [tm m]
+                      (dissoc! tm k))
+                    (let [f (compile trf)]
+                      (fn [tm m]
+                        (impl/upd!* m tm k f))))))]
+      (fn [v]
+        (when v
+          (persistent! (aux (transient v) v))
+          )))
 
     (and (vector? transform) (= (count transform) 1))
     (let [f (compile (first transform))]
@@ -137,8 +141,7 @@ thus generating code which skips type checks and dynamic traversal of the transf
 
     (sequential? transform)
     (let [fs (map compile transform)]
-      ;; PERFORMANCE maybe a special-purpose 'comp1' fn would improve performance here. (Val, 29 Dec 2016)
-      (apply comp (reverse fs)))
+      (apply impl/comp1 fs))
 
     :else
     (throw (ex-info "Unrecognized transform."

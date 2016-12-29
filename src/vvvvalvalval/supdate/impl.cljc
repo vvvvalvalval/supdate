@@ -34,70 +34,70 @@
     (mapv f coll)
     (map f coll)))
 
+(defn comp1
+  "ad-hoc composition of 1-arity fns, faster than clojure.core/comp."
+  ([] identity)
+  ([f] f)
+  ([a b]
+   (fn [x]
+     (-> x a b)
+     ))
+  ([a b c]
+   (fn [x]
+     (-> x a b c)
+     ))
+  ([a b c d]
+   (fn [x]
+     (-> x a b c d)
+     ))
+  ([a b c d e & rest]
+   (let [fs (into [a b c d e] rest)]
+     (loop [fs fs]
+       (if (-> fs count (> 1))
+         (recur (->> fs (partition-all 4) (mapv #(apply comp1 %))))
+         (first fs))))
+    ))
+
 (defn comp2
   "ad-hoc composition function for map transforms"
   ([]
-    (fn [v] v))
+   (fn [x a] x))
   ([f]
-   (fn [v]
-     (->> (transient v) (f v) persistent!)))
+   (fn [x a]
+     (-> x (f a))
+     ))
   ([f g]
-   (fn [m]
-     (->> (transient m) (f m) (g m) persistent!)))
+   (fn [x a]
+     (-> x (f a) (g a))
+     ))
   ([f g h]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v)
-       persistent!)))
+   (fn [x a]
+     (-> x (f a) (g a) (h a))
+     ))
   ([f g h i]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v) (i v)
-       persistent!)))
+   (fn [x a]
+     (-> x (f a) (g a) (h a) (i a))
+     ))
   ([f g h i j]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v) (i v) (j v)
-       persistent!)))
+   (fn [x a]
+     (-> x (f a) (g a) (h a) (i a) (j a))
+     ))
   ([f g h i j k]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v) (i v) (j v) (k v)
-       persistent!)))
+   (fn [x a]
+     (-> x (f a) (g a) (h a) (i a) (j a) (k a))
+     ))
   ([f g h i j k l]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v) (i v) (j v) (k v) (l v)
-       persistent!)))
+   (fn [x a]
+     (-> x (f a) (g a) (h a) (i a) (j a) (k a) (l a))
+     ))
   ([f g h i j k l m]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v) (i v) (j v) (k v) (l v) (m v)
-       persistent!)))
-  ([f g h i j k l m n]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v) (i v) (j v) (k v) (l v) (m v) (n v)
-       persistent!)))
-  ([f g h i j k l m n o]
-   (fn [v]
-     (->> (transient v)
-       (f v) (g v) (h v) (i v) (j v) (k v) (l v) (m v) (n v) (o v)
-       persistent!)))
-  ([f g h i j k l m n o p & rest]
-   (let [rest (vec rest)]
-     (if (empty? rest)
-       (fn [v]
-         (->> (transient v)
-           (f v) (g v) (h v) (i v) (j v) (k v) (l v) (m v) (n v) (o v) (p v)
-           persistent!))
-       (fn [v]
-         (persistent!
-           (reduce
-             (fn [f tv]
-               (f v tv))
-             (->> (transient v)
-               (f v) (g v) (h v) (i v) (j v) (k v) (l v) (m v) (n v) (o v) (p v))
-             rest))
-         ))))
-  )
+   (fn [x a]
+     (-> x (f a) (g a) (h a) (i a) (j a) (k a) (l a) (m a))
+     ))
+  ([f g h i j k l m n & rest]
+   (let [fs (into [f g h i j k l m n] rest)]
+     (loop [fs fs]
+       (if (-> fs count (> 1))
+         (recur (->> fs (partition-all 8) (mapv #(apply comp2 %))))
+         (first fs)))
+     )))

@@ -1,4 +1,4 @@
-(defproject vvvvalvalval/supdate "0.2.0"
+(defproject vvvvalvalval/supdate "0.2.1"
   :description "Clojure's update with superpowers"
   :url "https://github.com/vvvvalvalval/supdate"
   :license {:name "MIT"

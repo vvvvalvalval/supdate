@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## 0.2.1 - 2016-12-29
+### Fixed
+- bug in compile for large transform maps
+
+### Changed
+- implementation of compile, for performance
+
 ## 0.2.0 - 2016-12-29
 ### Added
 - compile function
@@ -12,5 +20,6 @@ All notable changes to this project will be documented in this file. This change
 - supdate macro
 - tests
 
-[Unreleased]: https://github.com/vvvvalvalval/supdate/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/vvvvalvalval/supdate/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/vvvvalvalval/supdate/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/vvvvalvalval/supdate/compare/v0.1.0...v0.2.0
