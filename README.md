@@ -2,6 +2,8 @@
 
 Clojure's update with superpowers.
 
+[![Clojars Project](https://img.shields.io/clojars/v/vvvvalvalval/supdate.svg)](https://clojars.org/vvvvalvalval/supdate)
+
 This library provides a `supdate` macro which lets you transform Clojure data structures
 declaratively, using a data-driven specification which structure matches the schema of the input. 
 
