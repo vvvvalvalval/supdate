@@ -96,5 +96,4 @@ More specifically:
 
 Copyright © 2016 Valentin Waeselynck and contributors 
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the MIT License.
