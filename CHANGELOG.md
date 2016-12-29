@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 ### Added
 - compile function
 - basic benchmarks script
+
 ## 0.1.0 - 2016-12-28
 ### Added
 - supdate macro
