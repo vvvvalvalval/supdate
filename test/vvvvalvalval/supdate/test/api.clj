@@ -11,6 +11,22 @@
     {:a inc "b" [{:c dec :d false}] :missing inc} ;; the transformation
     )
   => {:a 2, "b" [{:c 1} {:c 2}]}
+
+  (fact "comparing various execution strategies"
+    (=
+      (supdate
+        {:a 1 "b" [{:c 2} {:c 3 :d 4}]}
+        {:a inc "b" [{:c dec :d false}] :missing inc})
+      (let [t {:a inc "b" [{:c dec :d false}] :missing inc}]
+        (supdate
+          {:a 1 "b" [{:c 2} {:c 3 :d 4}]}
+          t))
+      (supd/supdate*
+        {:a 1 "b" [{:c 2} {:c 3 :d 4}]}
+        {:a inc "b" [{:c dec :d false}] :missing inc})
+      ((supd/compile {:a inc "b" [{:c dec :d false}] :missing inc})
+        {:a 1 "b" [{:c 2} {:c 3 :d 4}]})
+      ) => true)
   )
 
 (fact "if transform is a function: apply it to the value"

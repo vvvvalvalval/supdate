@@ -1,5 +1,6 @@
 (ns vvvvalvalval.supdate.api
-  (:require [vvvvalvalval.supdate.impl :as impl]))
+  (:require [vvvvalvalval.supdate.impl :as impl])
+  (:refer-clojure :exclude [compile]))
 
 (defn supdate*
   "Dynamic counterpart to the `supdate` macro, which works by using runtime type checks."
@@ -105,3 +106,41 @@ thus generating code which skips type checks and dynamic traversal of the transf
           `(supdate* ~vsym ~transform)
           ))))
 )
+
+(defn compile
+  "Given a transform specification (as passed as second argument to supdate or supdate*),
+  returns a function which accepts an input and transforms it.
+  The returned function runs faster than just calling supdate* (i.e interpreting the transform),
+  at the expense of more ahead-of-time work."
+  [transform]
+  (cond
+    (fn? transform)
+    transform
+
+    (keyword? transform)
+    #(get % transform)
+
+    (map? transform)
+    (apply impl/comp2
+      (for [[k trf] transform]
+        (if (false? trf)
+          (fn [m tm]
+            (dissoc! tm k))
+          (let [f (compile trf)]
+            (fn [m tm]
+              (impl/upd!* m tm k f))))))
+
+    (and (vector? transform) (= (count transform) 1))
+    (let [f (compile (first transform))]
+      (fn [v]
+        (impl/supd-map* f v)))
+
+    (sequential? transform)
+    (let [fs (map compile transform)]
+      ;; PERFORMANCE maybe a special-purpose 'comp1' fn would improve performance here. (Val, 29 Dec 2016)
+      (apply comp (reverse fs)))
+
+    :else
+    (throw (ex-info "Unrecognized transform."
+             {:transform transform}))
+    ))

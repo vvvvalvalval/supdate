@@ -10,6 +10,7 @@ The benefit is that such specifications eliminate a lot of the boilerplate code 
  
 In addition, `supdate` is a macro that leverages static information on a best-effort basis 
 in order to make the performance comparable to hand-written code.
+Dynamic pre-compilation (via `compile`) is also available to achieve better performance while remaining fully dynamic.
 
 ## Usage
 
@@ -41,6 +42,11 @@ in order to make the performance comparable to hand-written code.
     :h 0}
 ```
 
+See also the [tests](https://github.com/vvvvalvalval/supdate/blob/master/test/vvvvalvalval/supdate/test/api.clj)
+ for more examples.
+
+### Emulating standard library operations
+
 `supdate` generalizes several functions of Clojure's standard library:
 
 ```clojure
@@ -66,6 +72,7 @@ in order to make the performance comparable to hand-written code.
 => (-1 0 1 2 3 4 5 6 7 8)
 (supdate (range 10) [dec])
 => (-1 0 1 2 3 4 5 6 7 8)
+;; Note: unlike map, if the input is a vector, the output will also be a vector.
 
 ;;;; Emulating dissoc
 (dissoc {:a 1 :b 2 :c 3}
@@ -76,8 +83,34 @@ in order to make the performance comparable to hand-written code.
 => {:c 3}
 ```
 
-See also the [tests](https://github.com/vvvvalvalval/supdate/blob/master/test/vvvvalvalval/supdate/test/api.clj)
- for more examples.
+### Pre-compiling transforms
+
+A `compile` function is available to make execution faster:
+
+```clojure
+
+(def transform
+  (supd/compile {:a inc
+                 :b [inc]
+                 :c {"d" [{:e inc}]}
+                 :g [inc inc inc]
+                 :missing-key inc
+                 :i false
+                 }))
+
+(transform {:a 1
+            :b [1 2 3]
+            :c {"d" [{:e 1 :f 1} {:e 2 :f 2}]}
+            :g 0
+            :h 0
+            :i 0})
+=> {:a 2,
+    :b [2 3 4],
+    :c {"d" [{:e 2, :f 1} {:e 3, :f 2}]}
+    :g 3,
+    :h 0}
+
+```
 
 ## Comparison to [Specter](https://github.com/nathanmarz/specter)
 
