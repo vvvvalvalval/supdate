@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+## 0.2.2 - 2016-12-30
+### Changed
+- removed transients from impl, as they seem to provide no speedup.
+
 ## 0.2.1 - 2016-12-29
 ### Fixed
 - bug in compile for large transform maps
@@ -20,6 +24,7 @@ All notable changes to this project will be documented in this file. This change
 - supdate macro
 - tests
 
-[Unreleased]: https://github.com/vvvvalvalval/supdate/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/vvvvalvalval/supdate/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/vvvvalvalval/supdate/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/vvvvalvalval/supdate/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/vvvvalvalval/supdate/compare/v0.1.0...v0.2.0

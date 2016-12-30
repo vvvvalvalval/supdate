@@ -10,14 +10,12 @@
     (transform v)
 
     (map? transform)
-    (when v
-      (persistent!
-        (reduce-kv
-          (fn [tm k spec]
-            (if (false? spec)
-              (dissoc! tm k)
-              (impl/upd!* v tm k #(supdate* % spec))))
-          (transient v) transform)))
+    (reduce-kv
+      (fn [m k spec]
+        (if (false? spec)
+          (dissoc m k)
+          (impl/upd* m k #(supdate* % spec))))
+      v transform)
 
     (and (vector? transform) (= (count transform) 1))
     (let [sspec (first transform)]
@@ -69,24 +67,22 @@ thus generating code which skips type checks and dynamic traversal of the transf
     `(let [~vsym ~v]
        ~(cond
           (map? transform)
-          (let [tvsym (gensym "tv")]
-            `(when ~vsym
-               (as-> (transient ~vsym) ~tvsym
-                 ~@(for [[k trf] transform]
-                     (let [sk? (static-key? k)
-                           ksym (if sk? k (gensym "k"))
-                           form (cond
-                                  (false? trf)
-                                  `(dissoc! ~tvsym ~ksym)
+          `(as-> ~vsym ~vsym
+             ~@(for [[k trf] transform]
+                 (let [sk? (static-key? k)
+                       ksym (if sk? k (gensym "k"))
+                       form (cond
+                              (false? trf)
+                              `(dissoc ~vsym ~ksym)
 
-                                  (static-transform? trf)
-                                  `(impl/upd!* ~vsym ~tvsym ~ksym (fn [v#] (supdate v# ~trf)))
+                              (static-transform? trf)
+                              `(impl/upd* ~vsym ~ksym (fn [v#] (supdate v# ~trf)))
 
-                                  :dynamic
-                                  `(let [spec# ~trf]
-                                     (impl/upd-dynamic!* ~vsym ~tvsym ~ksym (fn [v#] (supdate* v# spec#)))))]
-                       (if sk? form `(let [~ksym ~k] ~form))))
-                 (persistent! ~tvsym))))
+                              :dynamic
+                              `(let [spec# ~trf]
+                                 (impl/upd-dynamic* ~vsym ~ksym (fn [v#] (supdate* v# spec#)))))]
+                   (if sk? form `(let [~ksym ~k] ~form))))
+             )
 
           (keyword? transform)
           `(~transform ~vsym)
@@ -121,18 +117,12 @@ thus generating code which skips type checks and dynamic traversal of the transf
     #(get % transform)
 
     (map? transform)
-    (let [aux (apply impl/comp2
-                (for [[k trf] transform]
-                  (if (false? trf)
-                    (fn [tm m]
-                      (dissoc! tm k))
-                    (let [f (compile trf)]
-                      (fn [tm m]
-                        (impl/upd!* m tm k f))))))]
-      (fn [v]
-        (when v
-          (persistent! (aux (transient v) v))
-          )))
+    (apply impl/comp1
+      (for [[k trf] transform]
+        (if (false? trf)
+          (fn [m] (dissoc m k))
+          (let [f (compile trf)]
+            (fn [m] (impl/upd* m k f))))))
 
     (and (vector? transform) (= (count transform) 1))
     (let [f (compile (first transform))]

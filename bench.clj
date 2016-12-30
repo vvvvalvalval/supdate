@@ -1,6 +1,7 @@
 ;;;; benchmarks
 (require '[vvvvalvalval.supdate.api :as s])
 (require '[criterium.core :as bench])
+(require '[vvvvalvalval.supdate.impl :as impl])
 
 (println "statically compiled:")
 (let [v {:a 1
@@ -50,32 +51,6 @@
 ;Execution time lower quantile : 3.772157 µs ( 2.5%)
 ;Execution time upper quantile : 5.300140 µs (97.5%)
 ;Overhead used : 1.787988 ns
-
-(println "dynamic, pre-allocated transform:")
-(let [v {:a 1
-         :b {"c" [{:d 1 :e 1} {:d 2 :e 2} {:d 3 :e 3}]}
-         :c [1 2 3]
-         :d 1
-         :e {:f 1}
-         :g "dissoc"
-         :h :ignore}
-      t {:a inc
-         :b {"c" [{:d inc}]}
-         :c [inc]
-         :d [inc inc inc]
-         :e :f
-         :g false}]
-  (bench/bench
-    (s/supdate*
-      v
-      t)))
-;Evaluation count : 15684840 in 60 samples of 261414 calls.
-;Execution time mean : 4.360580 µs
-;Execution time std-deviation : 384.968857 ns
-;Execution time lower quantile : 3.687479 µs ( 2.5%)
-;Execution time upper quantile : 5.125703 µs (97.5%)
-;Overhead used : 1.787988 ns
-
 
 (println "dynamically compiled:")
 (let [v {:a 1
