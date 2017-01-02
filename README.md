@@ -34,7 +34,7 @@ Dynamic pre-compilation (via `compile`) is also available to achieve better perf
    :b [inc]
    :c {"d" [{:e inc}]}
    :g [inc inc inc]
-   :missing-key inc
+   :my-missing-key inc
    :i false
    })
 => {:a 2,
