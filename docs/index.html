@@ -31,14 +31,16 @@ powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>:</p>
 
 require the following to load the framework:
 
-<pre ><code class="klipse"
-data-external-libs="https://raw.githubusercontent.com/vvvvalvalval/supdate/self-hosted-cljs/src">
+<pre class="hidden"><code class="klipse"
+data-external-libs="https://raw.githubusercontent.com/vvvvalvalval/supdate/e3dd0a2bfb1fc09ccc48cae2b488abf977e0423b/src">
 (require '[vvvvalvalval.supdate.api :as supd :refer-macros [supdate]])
 </code></pre>
 
 Let's define the rules of the game:
 
 <pre ><code class="klipse" >
+(require '[vvvvalvalval.supdate.api :refer [supdate]])
+
 (def data
   {:a 1
    :b [{:c 42}

@@ -1,6 +1,7 @@
 (ns vvvvalvalval.supdate.api
   (:require [vvvvalvalval.supdate.impl :as impl])
-  (:refer-clojure :exclude [compile]))
+  (:refer-clojure :exclude [compile])
+  #?(:cljs (:require-macros sc.api)))
 
 (defn supdate*
   "Dynamic counterpart to the `supdate` macro, which works by using runtime type checks."
@@ -32,11 +33,11 @@
              {:v v :transform transform}))
     ))
 
-   (defn- static-transform?
-     [t-form]
-     (or
-       (map? t-form) (vector? t-form) (false? t-form) (keyword? t-form)
-       (-> t-form (meta) (contains? ::type))))
+(defn- static-transform?
+  [t-form]
+  (or
+    (map? t-form) (vector? t-form) (false? t-form) (keyword? t-form)
+    (-> t-form (meta) (contains? ::type))))
 
 
 (defn- static-key?
