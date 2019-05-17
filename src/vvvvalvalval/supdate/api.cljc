@@ -1,7 +1,7 @@
 (ns vvvvalvalval.supdate.api
   (:require [vvvvalvalval.supdate.impl :as impl])
   (:refer-clojure :exclude [compile])
-  #?(:cljs (:require-macros sc.api)))
+  #?(:cljs (:require-macros vvvvalvalval.supdate.api)))
 
 (defn supdate*
   "Dynamic counterpart to the `supdate` macro, which works by using runtime type checks."
