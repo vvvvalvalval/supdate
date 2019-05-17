@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title>Supdate</title>
+
+    <link rel="stylesheet" type="text/css" href="https://viebel.github.io/klipse/css/main.css">
+    <style>
+        pre{
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body class="container">
+
+
+<h1>Supdate</h1>
+
+    <p>Ths page is <strong>live</strong> and <strong>interactive</strong>
+powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>:</p>
+
+<ol>
+  <li><strong>Live</strong>: The code is executed in your browser</li>
+  <li><strong>Interactive</strong>: You can modify the code and it is evaluated as you type</li>
+</ol>
+
+
+<h2> How to use the framework?</h2>
+
+require the following to load the framework:
+
+<pre ><code class="klipse"
+data-external-libs="https://raw.githubusercontent.com/vvvvalvalval/supdate/master/src">
+(require '[vvvvalvalval.supdate.api :as supd])
+</code></pre>
+
+Let's define the rules of the game:
+
+<pre ><code class="klipse" >
+(def data
+  {:a 1
+   :b [{:c 42}
+       {:c 43}
+       {:c-is-not "here"}]})
+
+(supd/supdate
+  data
+  {:a inc
+   :b [:c dec]})
+</code></pre>
+
+<link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
+
+<script>
+    window.klipse_settings = {
+        selector: '.klipse',
+        codemirror_options_in: {
+            lineWrapping: true,
+            autoCloseBrackets: true
+        }
+    }
+</script>
+<script src="https://storage.googleapis.com/app.klipse.tech/plugin/js/klipse_plugin.js"></script>
+  
+</body>
+</html>
