@@ -39,11 +39,10 @@
        (-> t-form (meta) (contains? ::type))))
 
 
-#?(:clj
-   (defn- static-key?
-     [key-form]
-     (or (keyword? key-form) (string? key-form) (number? key-form) (#{true false} key-form)))
-   )
+(defn- static-key?
+  [key-form]
+  (or (keyword? key-form) (string? key-form) (number? key-form) (#{true false} key-form)))
+
 
 (defmacro supdate
   "'Super Update' - transforms an input based on a recursive, data-oriented specification which matches the schema of the input.

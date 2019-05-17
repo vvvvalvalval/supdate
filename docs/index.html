@@ -32,8 +32,8 @@ powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>:</p>
 require the following to load the framework:
 
 <pre ><code class="klipse"
-data-external-libs="https://raw.githubusercontent.com/vvvvalvalval/supdate/master/src">
-(require '[vvvvalvalval.supdate.api :as supd])
+data-external-libs="https://raw.githubusercontent.com/vvvvalvalval/supdate/self-hosted-cljs/src">
+(require '[vvvvalvalval.supdate.api :as supd :refer-macros [supdate]])
 </code></pre>
 
 Let's define the rules of the game:
@@ -48,7 +48,7 @@ Let's define the rules of the game:
 (supd/supdate
   data
   {:a inc
-   :b [:c dec]})
+   :b [{:c dec}]})
 </code></pre>
 
 <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
