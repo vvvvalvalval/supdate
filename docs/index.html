@@ -69,8 +69,9 @@ Here's a basic example (it's interactive, feel free to modify the code!):
 
 <h2>The rules</h2>
 
-<code>supdate</code> works by defining <em>transforms</em> as data structures.
- The most elementary transform you could come up with is a function:
+<p><code>supdate</code> works by defining <strong>transforms</strong> as data structures.</p>
+
+<p>The most elementary transform you can encounter is just a function:</p>
 
 <pre><code class="klipse">
 (supd/supdate 0 inc)
@@ -116,7 +117,7 @@ Note that the transformation only occurs if the key is present!
   {:age inc})
 </code></pre>
 
-Finally, if you use <code>false</code> as a value instead of a function, it means you want the key to be dissoc'ed:
+Finally, if you use <code>false</code> as a value instead of a transform, it means you want the key to be dissoc'ed:
 
 <pre><code class="klipse">
 (supd/supdate
@@ -129,7 +130,7 @@ Finally, if you use <code>false</code> as a value instead of a function, it mean
 
 Recall that if you put a transform in a one-element vector, it is applied sequentially.
 
-If you put <i>several</i> transforms in a vector, it does something else: it applies the transforms one after the other,
+If you put <i style="font-style: italic;">several</i> transforms in a vector, it does something else: it applies the transforms one after the other,
  left to right.
 
 
