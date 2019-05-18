@@ -1,6 +1,7 @@
 (ns vvvvalvalval.supdate.api
   (:require [vvvvalvalval.supdate.impl :as impl])
-  (:refer-clojure :exclude [compile]))
+  (:refer-clojure :exclude [compile])
+  #?(:cljs (:require-macros vvvvalvalval.supdate.api)))
 
 (defn supdate*
   "Dynamic counterpart to the `supdate` macro, which works by using runtime type checks."
@@ -32,21 +33,21 @@
              {:v v :transform transform}))
     ))
 
-#?(:clj
-   (defn- static-transform?
-     [t-form]
-     (or
-       (map? t-form) (vector? t-form) (false? t-form) (keyword? t-form)
-       (-> t-form (meta) (contains? ::type))))
-   )
 
-#?(:clj
-   (defn- static-key?
-     [key-form]
-     (or (keyword? key-form) (string? key-form) (number? key-form) (#{true false} key-form)))
-   )
+(defn- static-transform?
+  [t-form]
+  (or
+    (map? t-form) (vector? t-form) (false? t-form) (keyword? t-form)
+    (-> t-form (meta) (contains? ::type))))
 
-#?(:clj
+
+
+(defn- static-key?
+  [key-form]
+  (or (keyword? key-form) (string? key-form) (number? key-form) (#{true false} key-form)))
+
+
+
 (defmacro supdate
   "'Super Update' - transforms an input based on a recursive, data-oriented specification which matches the schema of the input.
 
@@ -101,7 +102,7 @@ thus generating code which skips type checks and dynamic traversal of the transf
           :else
           `(supdate* ~vsym ~transform)
           ))))
-)
+
 
 (defn compile
   "Given a transform specification (as passed as second argument to supdate or supdate*),
