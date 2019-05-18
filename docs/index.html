@@ -18,38 +18,199 @@
 
 <h1>Supdate</h1>
 
-    <p>Ths page is <strong>live</strong> and <strong>interactive</strong>
-powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>:</p>
+<a href="https://clojars.org/vvvvalvalval/supdate" target="_blank"><img src="https://img.shields.io/clojars/v/vvvvalvalval/supdate.svg" alt="Clojars Project badge"></a>
 
-<ol>
-  <li><strong>Live</strong>: The code is executed in your browser</li>
-  <li><strong>Interactive</strong>: You can modify the code and it is evaluated as you type</li>
-</ol>
+<p><a href="https://github.com/vvvvalvalval/supdate" target="_blank"><code>supdate</code></a> is a small Clojure/ClojureScript library
+ for transforming nested data structures in a straightforward and efficient way.</p>
 
+<p><code>supdate</code> lets you express nested transformations as data structures which match the schema of the input,
+ and then executes these transformations efficiently.
+ You could say <code>supdate</code> is to data transformation what <code><a href="https://github.com/plumatic/schema" target="_blank">plumatic/schema</a></code>
+ is to data validation. It plays in the same arena as <code><a href="https://github.com/nathanmarz/specter" target="_blank">Specter</a></code>, complementing
+ it nicely for many basic cases where Specter would be too much.</p>
 
-<h2> How to use the framework?</h2>
+<h2>Example</h2>
 
-require the following to load the framework:
+The library can be downloaded from <a href="https://clojars.org/vvvvalvalval/supdate" target="_blank">Clojars</a>.
+ Require it with the following:
 
 <pre ><code class="klipse"
 data-external-libs="https://raw.githubusercontent.com/vvvvalvalval/supdate/master/src">
 (require '[vvvvalvalval.supdate.api :as supd])
 </code></pre>
 
-Let's define the rules of the game:
+Here's a basic example (it's interactive, feel free to modify the code!):
+
+<pre class="hidden"><code class="klipse">(require '[clojure.string :as str])</code></pre>
 
 <pre ><code class="klipse" >
-(def data
-  {:a 1
-   :b [{:c 42}
-       {:c 43}
-       {:c-is-not "here"}]})
+;; Our example uses some string functions
+(require '[clojure.string :as str])
+
+;; Let's define some example data
+(def input
+  {:bands [{:band/id 3141
+            :band/name "Led Zeppelin"
+            :band/members [{:person/name "roger plant"}
+                           {:person/name "jimmy page"}
+                           {:person/name "john bonham"}
+                           {:person/name "john paul jones"}]}
+           {:band/id 8242
+            :band/name "The White stripes"
+            :band/members [{:person/name "jack white"}
+                           {:person/name "meg white"}]}]})
+
+;; ... then transform it:
+(supd/supdate
+  input
+  {:bands [{:band/name str/upper-case
+            :band/members [{:person/name str/capitalize}]}]})
+</code></pre>
+
+<h2>The rules</h2>
+
+<code>supdate</code> works by defining <em>transforms</em> as data structures.
+ The most elementary transform you could come up with is a function:
+
+<pre><code class="klipse">
+(supd/supdate 0 inc)
+</code></pre>
+
+<pre><code class="klipse">
+(supd/supdate
+  "Jimmy Page"
+  (fn [s] (str/split s " ")))
+</code></pre>
+
+<h3>Transforming sequences</h3>
+
+Wrapping a transform in a vector means you want to apply it to a sequence of inputs:
+
+<pre><code class="klipse">
+(supd/supdate
+  [2 3 5 7 11 13 17 19]
+  [inc])
+</code></pre>
+
+<pre><code class="klipse">
+(supd/supdate
+  (range 12)
+  [#(* % %)])
+</code></pre>
+
+<h3>Transforming maps</h3>
+
+Wrapping a transform in a map means you want to transform the value at the key:
+
+<pre><code class="klipse">
+(supd/supdate
+  {:name "Alice" :age 7}
+  {:age inc})
+</code></pre>
+
+Note that the transformation only occurs if the key is present!
+
+<pre><code class="klipse">
+(supd/supdate
+  {:name "Ilúvatar"}
+  {:age inc})
+</code></pre>
+
+Finally, if you use <code>false</code> as a value instead of a function, it means you want the key to be dissoc'ed:
+
+<pre><code class="klipse">
+(supd/supdate
+  {:name "Alice" :age 7}
+  {:age false})
+</code></pre>
+
+
+<h3>Chaining tranforms</h3>
+
+Recall that if you put a transform in a one-element vector, it is applied sequentially.
+
+If you put <i>several</i> transforms in a vector, it does something else: it applies the transforms one after the other,
+ left to right.
+
+
+<pre><code class="klipse">
+(supd/supdate
+  " jimmy page  "
+  [str/trim str/capitalize])
+</code></pre>
+
+What if you want to do both, chaining tranforms and applying them in sequences? Well, you can use 2 vectors:
+
+<pre><code class="klipse">
+(supd/supdate
+  (range 10)
+  [[inc inc inc]])
+</code></pre>
+
+
+<h3>Composing tranforms</h3>
+
+<code>supdate</code> really becomes interesting when you start nesting transforms together:
+
+<pre><code class="klipse">
+(def input1
+  {:band/members [{:id 1 :name ["jimmy" "page"] :plays "voice"}
+                  {:id 2 :name ["robert" "plant"] :plays "guitar"}
+                  {:id 3 :name ["john" "paul" "jones"] :plays "bass"}
+                  {:id 4 :name ["john" "bonham"] :plays "drums"}]})
 
 (supd/supdate
-  data
-  {:a inc
-   :b [:c dec]})
+  input1
+  {:band/members [{:id false
+                   :name [[str/capitalize]
+                          #(str/join " " %)]
+                   :plays keyword}]})
 </code></pre>
+
+<h2>Is <code>supdate</code> fast?</h2>
+
+<p>Yes! Supdate will tend to outperform code hand-written using <code>update-in</code> or <code>assoc-in</code>, using several optimizations.</p>
+
+<p>It will avoid doing several 'deep dives' in the data, doing all it has to do once at a given path.</p>
+
+<p>What's more, <code>supd/supdate</code> is actually a macro, leveraging static information on a best-effort basis to compile to efficient code.</p>
+
+<p>Finally, you can also use <code>supd/compile</code> to pre-compile transforms, and achieve a similar effect more dynamically:</p>
+
+<pre><code class="klipse">
+(def input
+  {:bands [{:band/id 3141
+            :band/name "Led Zeppelin"
+            :band/members [{:person/name "roger plant"}
+                           {:person/name "jimmy page"}
+                           {:person/name "john bonham"}
+                           {:person/name "john paul jones"}]}
+           {:band/id 8242
+            :band/name "The White stripes"
+            :band/members [{:person/name "jack white"}
+                           {:person/name "meg white"}]}]})
+
+;; Pre-compiling our transform
+(def prettify-bands
+  (supd/compile
+    {:bands [{:band/name str/upper-case
+             :band/members [{:person/name str/capitalize}]}]}))
+
+;; Running it later:
+(prettify-bands input)
+</code></pre>
+
+<h2>Parting words</h2>
+
+Feel free to give feedback by opening a <a href="https://github.com/vvvvalvalval/supdate/issues"><code>Github issue</code></a>!
+
+<p>Ths page is <strong>live</strong> and <strong>interactive</strong>
+    powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>:</p>
+
+<ol>
+    <li><strong>Live</strong>: The code is executed in your browser</li>
+    <li><strong>Interactive</strong>: You can modify the code and it is evaluated as you type</li>
+</ol>
 
 <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
 
@@ -63,6 +224,9 @@ Let's define the rules of the game:
     }
 </script>
 <script src="https://storage.googleapis.com/app.klipse.tech/plugin/js/klipse_plugin.js"></script>
-  
+
+
+
+
 </body>
 </html>
