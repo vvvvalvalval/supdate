@@ -122,7 +122,7 @@ We believe this library is useful in situations where using Specter is overkill.
 More specifically:
 
 * Specter's `transform` is useful for making one sophisticated transformation,
- whereas `supdate` is good at making many basic tranformations at once.
+ whereas `supdate` is good at making many basic transformations at once.
 * Specter provides a `select` operation, supdate is only about transformation.
 * Arguably, supdate is easier to learn.
 * Specter is extensible, supdate is not.
