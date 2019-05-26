@@ -107,3 +107,7 @@
     :c {"d" [{:e 2, :f 1} {:e 3, :f 2}]}
     :g 3,
     :h 0}
+
+(fact
+ "a map with a false key will be applied as a wildcard against all keys"
+ (supdate {:a 5 :b 10} {false inc}))

@@ -7,10 +7,15 @@
   (let [not-found #?(:clj (Object.) :cljs (js-obj))]
     (fn upd*
       [m k f]
-      (let [v (get m k not-found)]
-        (if (identical? v not-found)
-          m
-          (assoc m k (f v))))
+      (if (false? k)
+        (reduce-kv (fn [acc k v]
+                     (assoc acc k (f v)))
+                   {}
+                   m)
+        (let [v (get m k not-found)]
+          (if (identical? v not-found)
+            m
+            (assoc m k (f v)))))
       )))
 
 (def upd-dynamic*
@@ -20,12 +25,19 @@
   (let [not-found #?(:clj (Object.) :cljs (js-obj))]
     (fn upd-dynamic*
       [m k f]
-      (let [v (get m k not-found)]
-        (if (identical? v not-found)
-          m
-          (if (false? f)
-            (dissoc m k)
-            (assoc m k (f v)))))
+      (if (false? k)
+        (reduce-kv (fn [acc k v]
+                     (if (false? f)
+                       acc
+                       (assoc acc k (f v))))
+                   {}
+                   m)
+        (let [v (get m k not-found)]
+          (if (identical? v not-found)
+            m
+            (if (false? f)
+              (dissoc m k)
+              (assoc m k (f v))))))
       )))
 
 (defn supd-map*
