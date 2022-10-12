@@ -30,10 +30,9 @@
 
 (defn supd-map*
   [f coll]
-  (cond 
-    (vector? coll) (mapv f coll)
-    (set? coll) (into #{} (map f coll))
-    :else (map f coll)))
+  (if (or (vector? coll) (set? coll))
+    (into (empty coll) (map f) coll)
+    (map f coll)))
 
 (defn comp1
   "ad-hoc composition of 1-arity fns, faster than clojure.core/comp."
