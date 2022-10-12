@@ -58,7 +58,8 @@ To avoid the cost of a runtime type check, the caller may add the ^{:vvvvalvalva
 The transform will only be performed for the keys that are contained in v.
 If the transform value for a key is `false`, then the key is dissoc'ed from v.
 * if `transform` is a vector with one element (a nested transform), will treat v as a collection an apply the nested transform to each element.
-It the source collection is a vector, the output collection will be a vector as well.
+If the source collection is a vector, the output collection will be a vector as well.
+If the source collection is a set, the output collection will be a set as well.
 * if transform is a sequence, will apply each transform in the sequence in order.
 
 In order to achieve efficiency, this macro will attempt to leverage static information on the `transform` form,

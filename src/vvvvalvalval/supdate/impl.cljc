@@ -30,8 +30,8 @@
 
 (defn supd-map*
   [f coll]
-  (if (vector? coll)
-    (mapv f coll)
+  (if (or (vector? coll) (set? coll))
+    (into (empty coll) (map f) coll)
     (map f coll)))
 
 (defn comp1

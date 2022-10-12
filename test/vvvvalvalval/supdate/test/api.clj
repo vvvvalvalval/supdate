@@ -68,9 +68,16 @@
   (supdate (list 1 2 3 4) [inc])
   => '(2 3 4 5)
 
+  (supdate (set [1 2 3 4]) [inc])
+  => #{2 3 4 5}
+
+  (supdate {:a #{1 2 3 4}} {:a [inc]})
+  => {:a #{2 3 4 5}}
+
   (supdate [] [inc]) => []
   (supdate () [inc]) => ()
-  )
+  (supdate #{} [inc]) => #{}
+  )  
 
 ;; you can nest transforms arbitrarily.
 (fact "Transforms can be nested"
@@ -94,16 +101,19 @@
    :b [1 2 3]
    :c {"d" [{:e 1 :f 1} {:e 2 :f 2}]}
    :g 0
-   :h 0})
+   :h 0
+   :i #{1 2 3}})
 
 (supdate
   my-data
   {:a inc
    :b [inc]
    :c {"d" [{:e inc}]}
-   :g [inc inc inc]})
+   :g [inc inc inc]
+   :i [str]})
 => {:a 2,
     :b [2 3 4],
     :c {"d" [{:e 2, :f 1} {:e 3, :f 2}]}
     :g 3,
-    :h 0}
+    :h 0
+    :i #{"1" "2" "3"}}
